@@ -1,0 +1,36 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Christoph Zeiler <archNOSPAM_at_moonblade.dot.org>
+
+pkgname=lzlib
+pkgver=1.15
+pkgrel=1
+pkgdesc="A library providing in-memory LZMA compression and decompression functions"
+arch=('x86_64' 'powerpc' 'powerpc64' 'powerpc64le' 'espresso')
+url="http://www.nongnu.org/lzip/lzlib.html"
+license=('BSD-2-Clause')
+depends=('glibc')
+source=(https://download.savannah.gnu.org/releases/lzip/$pkgname/$pkgname-$pkgver.tar.gz)
+sha256sums=('4afab907a46d5a7d14e927a1080c3f4d7e3ca5a0f9aea81747d8fed0292377ff')
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure \
+    --prefix=/usr \
+    --enable-shared \
+    CFLAGS="$CFLAGS" \
+    LDFLAGS="$LDFLAGS"
+  make
+}
+
+check() {
+  cd $pkgname-$pkgver
+  make check
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install{,-man}
+  install -vDm755 -t "$pkgdir/usr/bin" minilzip
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" COPYING
+}
